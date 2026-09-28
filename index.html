@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RUBBER SMART CUT</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Arial", "Tahoma", sans-serif;
+      background: #f3f7f2;
+      color: #203126;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; border: none; }
+    .app { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 245px;
+      background: #173b2a;
+      color: white;
+      padding: 24px 16px;
+      flex-shrink: 0;
+    }
+    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 32px; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 13px;
+      background: #a9d66f; color: #173b2a;
+      display: grid; place-items: center; font-size: 23px;
+    }
+    .brand h1 { font-size: 15px; margin: 0; }
+    .brand p { font-size: 11px; opacity: .7; margin: 4px 0 0; }
+    .nav-btn {
+      width: 100%; text-align: left; padding: 13px 14px; margin: 5px 0;
+      border-radius: 12px; background: transparent; color: #dbe9dc;
+    }
+    .nav-btn.active, .nav-btn:hover { background: #2e6042; color: white; }
+    .side-note {
+      margin-top: 35px; padding: 14px; border-radius: 13px;
+      background: #245039; font-size: 12px; line-height: 1.6; color: #d9ebda;
+    }
+    .main { flex: 1; padding: 28px; max-width: 1450px; margin: auto; width: 100%; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .eyebrow { color: #64806b; font-size: 13px; margin: 0 0 6px; }
+    h2 { margin: 0; font-size: 28px; }
+    .demo-badge { background: #e6f2d8; color: #47752d; padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: bold; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .card {
+      background: white; border: 1px solid #e1e9df; border-radius: 18px;
+      padding: 20px; box-shadow: 0 5px 18px rgba(27, 61, 39, .04);
+    }
+    .stat-label { color: #78907c; font-size: 13px; margin-bottom: 12px; }
+    .stat-value { font-size: 28px; font-weight: bold; }
+    .stat-sub { font-size: 12px; color: #829284; margin-top: 8px; }
+    .icon-box { float: right; background: #edf6e8; padding: 10px; border-radius: 12px; }
+    .two-col { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; }
+    .card-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .card-title h3 { margin: 0; font-size: 17px; }
+    .status { color: #4b8a35; background: #e8f5df; border-radius: 999px; padding: 6px 10px; font-size: 11px; font-weight: bold; }
+    .machine {
+      min-height: 245px; display: grid; place-items: center; text-align: center;
+      background: linear-gradient(135deg, #f4f8f1, #e5f0df); border-radius: 16px;
+      padding: 20px;
+    }
+    .machine-emoji { font-size: 78px; margin-bottom: 12px; }
+    .machine strong { display: block; font-size: 18px; }
+    .machine small { color: #779078; display: block; margin-top: 6px; }
+    .progress-track { height: 12px; background: #e7eee4; border-radius: 999px; overflow: hidden; margin: 12px 0; }
+    .progress-bar { height: 100%; width: 0%; background: #72aa4d; border-radius: 999px; transition: width .4s; }
+    .progress-row { display: flex; justify-content: space-between; font-size: 13px; color: #718575; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .btn { padding: 12px 17px; border-radius: 11px; font-weight: bold; font-size: 13px; }
+    .btn-primary { background: #2f7043; color: white; }
+    .btn-primary:hover { background: #245b35; }
+    .btn-light { background: #edf4e9; color: #37623e; }
+    .btn-danger { background: #fff0ed; color: #b34d3e; }
+    .alert { display: flex; gap: 12px; align-items: flex-start; padding: 13px; background: #fff8e5; border: 1px solid #f3e1ad; border-radius: 12px; color: #86671d; font-size: 13px; line-height: 1.5; }
+    .setting-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    label { display: block; font-size: 13px; color: #607766; margin-bottom: 7px; }
+    input, select {
+      width: 100%; padding: 12px; border: 1px solid #d9e5d7; border-radius: 10px;
+      background: #fbfdfb; color: #263c2c; outline: none;
+    }
+    input:focus, select:focus { border-color: #75a75a; }
+    .form-group { margin-bottom: 16px; }
+    .info-list { display: grid; gap: 12px; }
+    .info-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #edf1eb; font-size: 13px; }
+    .info-line span:first-child { color: #7a8e7d; }
+    .map-box {
+      min-height: 280px; border-radius: 15px; background:
+      linear-gradient(30deg, transparent 48%, #d3e4c9 49%, #d3e4c9 51%, transparent 52%),
+      linear-gradient(120deg, transparent 48%, #d3e4c9 49%, #d3e4c9 51%, transparent 52%),
+      #edf5e8; background-size: 80px 80px; position: relative; overflow: hidden;
+    }
+    .map-pin { position: absolute; top: 42%; left: 51%; font-size: 34px; }
+    .map-label { position: absolute; bottom: 15px; left: 15px; background: white; padding: 10px 13px; border-radius: 10px; font-size: 12px; box-shadow: 0 3px 10px #9bb49a55; }
+    .toast {
+      position: fixed; right: 24px; bottom: 24px; background: #173b2a; color: white;
+      padding: 15px 18px; border-radius: 12px; display: none; max-width: 310px;
+      box-shadow: 0 8px 30px #0002; font-size: 13px; z-index: 5;
+    }
+    @media (max-width: 950px) {
+      .sidebar { width: 190px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 650px) {
+      .app { display: block; }
+      .sidebar { width: 100%; padding: 15px; }
+      .brand { margin-bottom: 15px; }
+      .nav-btn { width: auto; margin-right: 5px; padding: 10px; }
+      .side-note { display: none; }
+      .main { padding: 18px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      h2 { font-size: 24px; }
+      .grid, .setting-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🌱</div>
+        <div>
+          <h1>RUBBER SMART CUT</h1>
+          <p>Smart Rubber Tapping</p>
+        </div>
+      </div>
+      <button class="nav-btn active" data-page="dashboard">▦ &nbsp; แดชบอร์ด</button>
+      <button class="nav-btn" data-page="settings">⚙ &nbsp; ตั้งค่าการกรีด</button>
+      <button class="nav-btn" data-page="tracking">⌖ &nbsp; ติดตามเครื่อง</button>
+      <button class="nav-btn" data-page="qrcode">▦ &nbsp; QR Code</button>
+      <div class="side-note">
+        <strong>โหมดต้นแบบ</strong><br />
+        เว็บไซต์นี้เป็นระบบจำลองเพื่อใช้ในการนำเสนอ ไม่ได้เชื่อมต่อกับเครื่องกรีดยางจริง
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">ระบบควบคุมเครื่องกรีดยางอัจฉริยะ</p>
+          <h2 id="pageTitle">แดชบอร์ด</h2>
+        </div>
+        <div class="demo-badge">● DEMO PROTOTYPE</div>
+      </div>
+
+      <section class="page active" id="dashboard">
+        <div class="grid">
+          <div class="card">
+            <span class="icon-box">⚡</span>
+            <div class="stat-label">สถานะเครื่อง</div>
+            <div class="stat-value" id="machineStatus">พร้อม</div>
+            <div class="stat-sub">ระบบจำลองการทำงาน</div>
+          </div>
+          <div class="card">
+            <span class="icon-box">🌳</span>
+            <div class="stat-label">ต้นยางทั้งหมด</div>
+            <div class="stat-value" id="treeTotal">50</div>
+            <div class="stat-sub">ต้นที่ตั้งค่าไว้</div>
+          </div>
+          <div class="card">
+            <span class="icon-box">🔋</span>
+            <div class="stat-label">แบตเตอรี่</div>
+            <div class="stat-value" id="battery">85%</div>
+            <div class="stat-sub">ค่าจำลอง</div>
+          </div>
+          <div class="card">
+            <span class="icon-box">✓</span>
+            <div class="stat-label">กรีดแล้ว</div>
+            <div class="stat-value" id="treeDone">0</div>
+            <div class="stat-sub">ต้น</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <h3>สถานะการทำงาน</h3>
+              <span class="status" id="statusBadge">พร้อมทำงาน</span>
+            </div>
+            <div class="machine">
+              <div>
+                <div class="machine-emoji">🌳⚙️</div>
+                <strong id="machineMessage">เครื่องพร้อมเริ่มทำงาน</strong>
+                <small id="currentTree">ยังไม่ได้เริ่มการกรีด</small>
+              </div>
+            </div>
+            <div style="margin-top:20px">
+              <div class="progress-row"><span>ความคืบหน้า</span><strong id="progressText">0%</strong></div>
+              <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="startBtn">▶ เริ่มทำงาน</button>
+              <button class="btn btn-danger" id="stopBtn">■ หยุดทำงาน</button>
+              <button class="btn btn-light" id="alertBtn">⚠ จำลองแจ้งเตือน</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <h3>ค่าการกรีดปัจจุบัน</h3>
+              <span class="status">ตั้งค่าแล้ว</span>
+            </div>
+            <div class="info-list">
+              <div class="info-line"><span>เวลากรีด</span><strong id="showTime">05:00 น.</strong></div>
+              <div class="info-line"><span>จำนวนต้นยาง</span><strong id="showTrees">50 ต้น</strong></div>
+              <div class="info-line"><span>ความลึกใบมีด</span><strong id="showDepth">2.0 มม.</strong></div>
+              <div class="info-line"><span>องศาใบมีด</span><strong id="showAngle">30°</strong></div>
+              <div class="info-line"><span>การเชื่อมต่อ</span><strong style="color:#4b8a35">จำลองออนไลน์</strong></div>
+            </div>
+            <div class="alert" style="margin-top:20px">
+              💡 <span>สามารถเปลี่ยนค่าการกรีดได้ที่เมนู “ตั้งค่าการกรีด”</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="settings">
+        <div class="card">
+          <div class="card-title">
+            <h3>ตั้งค่าการกรีดยาง</h3>
+            <span class="status">แก้ไขได้</span>
+          </div>
+          <div class="setting-grid">
+            <div class="form-group">
+              <label for="timeInput">เวลากรีด</label>
+              <input id="timeInput" type="time" value="05:00" />
+            </div>
+            <div class="form-group">
+              <label for="treesInput">จำนวนต้นยาง</label>
+              <input id="treesInput" type="number" min="1" max="999" value="50" />
+            </div>
+            <div class="form-group">
+              <label for="depthInput">ความลึกใบมีด (มม.)</label>
+              <input id="depthInput" type="number" min="0.5" max="5" step="0.1" value="2.0" />
+            </div>
+            <div class="form-group">
+              <label for="angleInput">องศาใบมีด</label>
+              <select id="angleInput">
+                <option value="20">20°</option>
+                <option value="25">25°</option>
+                <option value="30" selected>30°</option>
+                <option value="35">35°</option>
+                <option value="40">40°</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="saveBtn">✓ บันทึกการตั้งค่า</button>
+            <button class="btn btn-light" id="resetBtn">↺ คืนค่าเริ่มต้น</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="tracking">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <h3>ตำแหน่งเครื่อง</h3>
+              <span class="status">จำลอง GPS</span>
+            </div>
+            <div class="map-box">
+              <div class="map-pin">📍</div>
+              <div class="map-label">แปลงยาง A-01<br /><span style="color:#7b907d">พิกัดจำลอง</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <h3>ระบบติดตามและความปลอดภัย</h3>
+            </div>
+            <div class="info-list">
+              <div class="info-line"><span>สถานะ GPS</span><strong style="color:#4b8a35">เชื่อมต่อ</strong></div>
+              <div class="info-line"><span>Bluetooth</span><strong style="color:#4b8a35">พร้อมใช้งาน</strong></div>
+              <div class="info-line"><span>การเคลื่อนย้าย</span><strong>ไม่พบความผิดปกติ</strong></div>
+              <div class="info-line"><span>รหัสเครื่อง</span><strong>RSC-DEMO-001</strong></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-light" id="moveAlertBtn">⚠ จำลองการเคลื่อนย้าย</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="qrcode">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <h3>QR Code ประจำเครื่อง</h3>
+              <span class="status">ต้นแบบ</span>
+            </div>
+            <p style="font-size:13px;color:#718575;line-height:1.7">
+              สามารถนำ QR Code นี้ไปออกแบบเป็นสติกเกอร์ติดบนตัวเครื่อง
+              เพื่อให้ผู้ใช้งานสแกนเข้าสู่หน้าเว็บไซต์ควบคุมเครื่องได้
+            </p>
+            <div style="display:grid;place-items:center;background:#f7faf5;border-radius:16px;padding:20px;margin:18px 0">
+              <img id="qrImage" alt="QR Code สำหรับเข้าสู่เว็บไซต์" width="220" height="220"
+                   style="max-width:100%;border-radius:8px;background:white;padding:8px"
+                   src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fexample.com%2Frubber-smart-cut" />
+              <p id="qrCaption" style="font-size:12px;color:#718575;text-align:center;margin:12px 0 0">
+                QR Code ตัวอย่าง
+              </p>
+            </div>
+            <div class="alert">
+              💡 <span>เมื่อมีลิงก์เว็บไซต์จริง ให้นำลิงก์มาใส่ในช่องด้านขวา แล้วสร้าง QR Code ใหม่</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <h3>สร้าง QR Code จากลิงก์เว็บ</h3>
+            </div>
+            <div class="form-group">
+              <label for="qrUrlInput">ลิงก์เว็บไซต์ที่จะให้สแกนเข้า</label>
+              <input id="qrUrlInput" type="url"
+                     value="https://example.com/rubber-smart-cut"
+                     placeholder="https://your-website.com" />
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="makeQrBtn">▦ สร้าง QR Code</button>
+              <button class="btn btn-light" id="openQrBtn">↗ เปิดลิงก์</button>
+            </div>
+            <div class="info-list" style="margin-top:20px">
+              <div class="info-line"><span>รหัสเครื่อง</span><strong>RSC-DEMO-001</strong></div>
+              <div class="info-line"><span>การใช้งาน</span><strong>สแกนด้วยกล้องมือถือ</strong></div>
+              <div class="info-line"><span>ประเภท</span><strong>QR Code จำลอง</strong></div>
+            </div>
+            <div class="alert" style="margin-top:20px">
+              ⚠ <span>QR Code จะใช้งานเข้าสู่เว็บได้จริงก็ต่อเมื่อเว็บไซต์ถูกนำไปเผยแพร่บนอินเทอร์เน็ตแล้ว เช่น GitHub Pages หรือบริการโฮสต์เว็บไซต์</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let running = false;
+    let timer = null;
+    let done = 0;
+    let total = 50;
+
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(message) {
+      $("toast").textContent = message;
+      $("toast").style.display = "block";
+      setTimeout(() => $("toast").style.display = "none", 2800);
+    }
+
+    function updateDashboard() {
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      $("treeTotal").textContent = total;
+      $("treeDone").textContent = done;
+      $("progressText").textContent = percent + "%";
+      $("progressBar").style.width = percent + "%";
+      $("currentTree").textContent = running
+        ? "กำลังกรีดต้นที่ " + Math.min(done + 1, total) + " จาก " + total
+        : done > 0 ? "กรีดเสร็จแล้ว " + done + " ต้น" : "ยังไม่ได้เริ่มการกรีด";
+    }
+
+    function startWork() {
+      if (running) return;
+      if (done >= total) {
+        done = 0;
+      }
+      running = true;
+      $("machineStatus").textContent = "ทำงาน";
+      $("statusBadge").textContent = "กำลังทำงาน";
+      $("statusBadge").style.background = "#fff3d6";
+      $("statusBadge").style.color = "#98701f";
+      $("machineMessage").textContent = "เครื่องกำลังจำลองการกรีด";
+      timer = setInterval(() => {
+        if (done < total) {
+          done++;
+          updateDashboard();
+        } else {
+          stopWork(true);
+        }
+      }, 700);
+      showToast("เริ่มการทำงานจำลองแล้ว");
+    }
+
+    function stopWork(completed = false) {
+      running = false;
+      clearInterval(timer);
+      timer = null;
+      $("machineStatus").textContent = completed ? "เสร็จสิ้น" : "หยุด";
+      $("statusBadge").textContent = completed ? "ทำงานเสร็จแล้ว" : "หยุดทำงาน";
+      $("statusBadge").style.background = "#e8f5df";
+      $("statusBadge").style.color = "#4b8a35";
+      $("machineMessage").textContent = completed ? "จำลองการกรีดเสร็จสิ้น" : "เครื่องหยุดทำงาน";
+      updateDashboard();
+      showToast(completed ? "จำลองการกรีดครบทุกต้นแล้ว" : "หยุดการทำงานจำลองแล้ว");
+    }
+
+    function saveSettings() {
+      const newTotal = Number($("treesInput").value);
+      if (!newTotal || newTotal < 1) {
+        showToast("กรุณาระบุจำนวนต้นยางให้ถูกต้อง");
+        return;
+      }
+      total = newTotal;
+      done = 0;
+      $("showTime").textContent = $("timeInput").value + " น.";
+      $("showTrees").textContent = total + " ต้น";
+      $("showDepth").textContent = Number($("depthInput").value).toFixed(1) + " มม.";
+      $("showAngle").textContent = $("angleInput").value + "°";
+      updateDashboard();
+      showToast("บันทึกการตั้งค่าเรียบร้อยแล้ว");
+      switchPage("dashboard");
+    }
+
+    function resetSettings() {
+      $("timeInput").value = "05:00";
+      $("treesInput").value = 50;
+      $("depthInput").value = "2.0";
+      $("angleInput").value = "30";
+      showToast("คืนค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน");
+    }
+
+    function switchPage(page) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      $(page).classList.add("active");
+      document.querySelector('[data-page="' + page + '"]').classList.add("active");
+      $("pageTitle").textContent =
+        page === "dashboard" ? "แดชบอร์ด" :
+        page === "settings" ? "ตั้งค่าการกรีด" :
+        page === "tracking" ? "ติดตามเครื่อง" : "QR Code";
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchPage(btn.dataset.page));
+    });
+    $("startBtn").addEventListener("click", startWork);
+    $("stopBtn").addEventListener("click", () => stopWork(false));
+    $("saveBtn").addEventListener("click", saveSettings);
+    $("resetBtn").addEventListener("click", resetSettings);
+    $("alertBtn").addEventListener("click", () => showToast("⚠ แจ้งเตือนจำลอง: ควรตรวจสอบความคมของใบมีด"));
+    $("moveAlertBtn").addEventListener("click", () => showToast("⚠ แจ้งเตือนจำลอง: ตรวจพบการเคลื่อนย้ายเครื่อง"));
+
+
+    function makeQrCode() {
+      const url = $("qrUrlInput").value.trim();
+      if (!url || !/^https?:\/\//i.test(url)) {
+        showToast("กรุณาใส่ลิงก์ที่ขึ้นต้นด้วย https:// หรือ http://");
+        return;
+      }
+      $("qrImage").src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
+        encodeURIComponent(url);
+      $("qrCaption").textContent = "QR Code สำหรับ: " + url;
+      showToast("สร้าง QR Code จากลิงก์เรียบร้อยแล้ว");
+    }
+
+    $("makeQrBtn").addEventListener("click", makeQrCode);
+    $("openQrBtn").addEventListener("click", () => {
+      const url = $("qrUrlInput").value.trim();
+      if (!url || !/^https?:\/\//i.test(url)) {
+        showToast("กรุณาใส่ลิงก์เว็บไซต์ให้ถูกต้องก่อน");
+        return;
+      }
+      window.open(url, "_blank");
+    });
+
+    updateDashboard();
+  </script>
+</body>
+</html>
